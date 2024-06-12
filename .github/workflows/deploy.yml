@@ -1,0 +1,26 @@
+name: Deploy to Azure
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+ 
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+ 
+    - name: Deploy to Azure Container Apps
+      run: |
+        az containerapp update \
+          --name ${{ vars.AZURE_PREFIX }}containerapp \
+          --resource-group ${{ vars.AZURE_RG }} \
+          --image ${{ secrets.REGISTRY_USERNAME }}/${{ vars.AZURE_PREFIX }}containerapp:latest
